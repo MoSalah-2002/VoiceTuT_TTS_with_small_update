@@ -1,5 +1,10 @@
-"""Unit tests for text normalization and engine text-logic (no model/GPU needed)."""
+"""Unit tests for text normalization and engine text-logic (no model/GPU needed).
 
+Comparisons are diacritic-insensitive (via `_norm`) so they survive vowel-mark tweaks
+to the lexicons; we assert on the consonantal skeleton + word structure.
+"""
+
+import re
 import pytest
 
 from voicetut_tts.normalization import (
@@ -8,13 +13,21 @@ from voicetut_tts.normalization import (
 from voicetut_tts.engine import split_sentences, resolve_language
 
 
+def _norm(s: str) -> str:
+    """Strip Arabic diacritics and unify hamza/alef forms for robust comparison."""
+    s = re.sub(r"[ً-ْ]", "", s)            # harakat / shadda / sukun
+    s = (s.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا")
+           .replace("ة", "ه").replace("ى", "ي"))
+    return s
+
+
 # --------------------------------------------------------------- numbers
 @pytest.mark.parametrize("n,expected", [
-    (0, "صفر"), (7, "سبعة"), (15, "خمستاشر"), (21, "واحد وعشرين"),
-    (100, "مية"), (250, "ميتين وخمسين"), (1000, "ألف"),
+    (0, "صفر"), (7, "سبعه"), (15, "خمستاشر"), (21, "واحد وعشرين"),
+    (100, "ميه"), (250, "متين وخمسين"), (1000, "الف"),
 ])
 def test_number_words(n, expected):
-    assert number_to_arabic_words(n) == expected
+    assert _norm(number_to_arabic_words(n)) == _norm(expected)
 
 
 # --------------------------------------------------------------- normalizer
@@ -50,21 +63,28 @@ def test_percent(norm):
     (12, 0, "اتناشر"),
 ])
 def test_time_colloquial(h, m, expected):
-    assert _say_time(h, m) == expected
+    assert _norm(_say_time(h, m)) == _norm(expected)
 
 
-@pytest.mark.parametrize("prefix", ["زيرو عشرة", "زيرو حداشر", "زيرو اتناشر", "زيرو خمستاشر"])
-def test_phone_prefixes(prefix):
-    pre_digit = {"عشرة": "010", "حداشر": "011", "اتناشر": "012", "خمستاشر": "015"}
-    code = pre_digit[prefix.split()[-1]]
-    out = _say_phone_number(code + "47450629")
-    assert out.strip().startswith(prefix)
+@pytest.mark.parametrize("code,prefix", [
+    ("010", "زيرو عشره"), ("011", "زيرو حداشر"),
+    ("012", "زيرو اتناشر"), ("015", "زيرو خمستاشر"),
+])
+def test_phone_prefixes(code, prefix):
+    out = _norm(_say_phone_number(code + "47450629"))
+    assert out.strip().startswith(_norm(prefix))
 
 
 def test_phone_pairs_as_tens():
-    # 011 | 47 | 45 | 06 | 29
+    # 011 | 47 | 45 | 06 | 29  -> pairs as tens, leading-zero pair reads "زيرو ..."
+    out = _norm(_say_phone_number("01147450629"))
+    assert "حداشر" in out and "سبعه واربعين" in out and "تسعه وعشرين" in out
+
+
+def test_phone_pauses_and_leading_zero():
     out = _say_phone_number("01147450629")
-    assert "حداشر" in out and "سبعة وأربعين" in out and "تسعة وعشرين" in out
+    assert "،" in out                      # pauses between 2-digit groups
+    assert "زيرو" in _norm(out).split("حداشر", 1)[1]  # "06" read as "زيرو سته", not bare "سته"
 
 
 def test_name_transliteration():

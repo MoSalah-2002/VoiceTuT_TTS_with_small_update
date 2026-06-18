@@ -32,12 +32,12 @@ ASCII_DIGITS = "0123456789"
 _AR2ASCII = {ord(a): d for a, d in zip(ARABIC_INDIC, ASCII_DIGITS)}
 
 # --------------------------------------------------------------------------- number words (Arabic)
-_ONES = ["", "واحد", "اتنين", "تلاتة", "أربعة", "خمسة", "ستة", "سبعة", "تمانية", "تسعة"]
-_TEENS = ["عشرة", "حداشر", "اتناشر", "تلاتاشر", "أربعتاشر", "خمستاشر",
-          "ستاشر", "سبعتاشر", "تمنتاشر", "تسعتاشر"]
-_TENS = ["", "عشرة", "عشرين", "تلاتين", "أربعين", "خمسين", "ستين", "سبعين", "تمانين", "تسعين"]
-_HUNDREDS = ["", "مية", "ميتين", "تلتمية", "ربعمية", "خمسمية",
-             "ستمية", "سبعمية", "تمنمية", "تسعمية"]
+_ONES = ["", "وَاحِد", "اِتْنِين", "تَلَاتَة", "أَرْبَعَه", "خَمْسَه", "سِتَّه", "سَبْعَه", "تَمَانْيَه", "تِسْعَه"]
+_TEENS = ["عَشَرَه", "حِدَاشَر", "اِتْنَاشَر", "تَلاتَّاشّر", "أَرْبَعْتَاشَر", "خَمَسْتَاشَر",
+          "سِتَّاشَر", "سَبَعْتَاشَر", "تَمَنْتَاشَر", "تِسَعْتَاشَر"]
+_TENS = ["", "عَشَرَه", "عِشْرين", "تلاتين", "أَرْبِعين", "خَمْسِين", "سِتِّين", "سَبْعين", "تَمانين", "تِسعين"]
+_HUNDREDS = ["", "مِية", "مِتِين", "تُلْتٌمِية", "رُبْعُمِية", "خُمْسُمِية",
+             "سُتُّمِية", "سُبْعُمِية", "تُمْنُمِية", "تُسْعُمِية"]
 _SCALES = [(1_000_000_000, "مليار"), (1_000_000, "مليون"), (1_000, "ألف")]
 
 
@@ -86,7 +86,7 @@ def _read_decimal(num_str: str) -> str:
     if "." not in num_str:
         return number_to_arabic_words(int(num_str))
     intp, frac = num_str.split(".", 1)
-    out = number_to_arabic_words(int(intp or "0")) + " فاصلة "
+    out = number_to_arabic_words(int(intp or "0")) + " فَاصْلَة "
     out += " ".join(_ONES[int(d)] if d != "0" else "صفر" for d in frac)
     return out
 
@@ -94,11 +94,11 @@ def _read_decimal(num_str: str) -> str:
 # --------------------------------------------------------------------------- time (colloquial Egyptian)
 # Hours are read in the feminine ordinal-ish colloquial form after "الساعة".
 _HOUR_FEM = {
-    1: "واحدة", 2: "اتنين", 3: "تلاتة", 4: "أربعة", 5: "خمسة", 6: "ستة",
-    7: "سبعة", 8: "تمانية", 9: "تسعة", 10: "عشرة", 11: "حداشر", 12: "اتناشر",
+    1: "وَاحْدَه", 2: "اتنين", 3: "تَلَاتَة", 4: "أَرْبَعَه", 5: "خَمْسَه", 6: "سِتَّه",
+    7: "سَبْعَه", 8: "تَمَانْيَه", 9: "تِسْعَه", 10: "عَشَرَه", 11: "حِدَاشَر", 12: "اِتْنَاشَر",
 }
 # fraction words for common minute marks
-_MIN_FRACTION = {5: "خمسة", 10: "عشرة", 15: "ربع", 20: "تلت", 30: "نص"}
+_MIN_FRACTION = {5: "خَمْسَه", 10: "عَشَرَه", 15: "رُبع", 20: "تِلْت", 30: "نُصّ"}
 
 
 def _hour_word(h: int) -> str:
@@ -124,9 +124,9 @@ def _say_time(h: int, mn: int) -> str:
         return f"{hour} و {_MIN_FRACTION[mn]}"
     # around the half: 25 -> نص الا خمسة, 35 -> نص و خمسة, 40 -> نص و عشرة... but 40 reads as الا تلت
     if mn == 25:
-        return f"{hour} و نص الا خمسة"
+        return f"{hour} و نٌصّ اِلَّا خَمْسَه"
     if mn == 35:
-        return f"{hour} و نص و خمسة"
+        return f"{hour} و نُصّ و خَمْسَه"
     # minutes past the half hour read as "الا" (to) the NEXT hour
     if mn > 30:
         nxt = _hour_word((h % 12) + 1 if (h % 12) != 0 else 1)
@@ -141,18 +141,19 @@ def _say_time(h: int, mn: int) -> str:
 # Egyptian mobile numbers start with a 3-digit operator prefix; read it specially:
 #   011 -> زيرو حداشر   010 -> زيرو عشرة   012 -> زيرو اتناشر   015 -> زيرو خمستاشر
 PHONE_PREFIX = {
-    "010": "زيرو عشرة",
-    "011": "زيرو حداشر",
-    "012": "زيرو اتناشر",
-    "015": "زيرو خمستاشر",
+    "010": "زيرو عَشَرَه",
+    "011": "زيرو حْدَاشَر",
+    "012": "زيرو اِتْنَاشَر",
+    "015": "زيرو خَمَسْتَاشَر",
 }
 
 
 def _say_phone_number(raw: str) -> str:
-    """Read an Egyptian phone number: special prefix, then 2-digit groups as tens.
+    """Read an Egyptian phone number: special prefix, then 2-digit groups as tens,
+    with a pause (،) between groups so it isn't run together.
 
-    01147450629 -> زيرو حداشر سبعة و أربعين خمسة و أربعين ستة تسعة و عشرين
-    (groups: 011 | 47 | 45 | 06 | 29). A leading 0 inside a pair is read 'صفر'.
+    01147450629 -> زيرو حْدَاشَر، سَبْعَه وأَرْبِعين، خَمْسَه وأَرْبِعين، زيرو سِتَّه، تِسْعَه وعِشْرين
+    (groups: 011 | 47 | 45 | 06 | 29). A leading 0 inside a pair is read 'زيرو'.
     A trailing single digit is read on its own.
     """
     digits = re.sub(r"\D", "", raw)
@@ -169,14 +170,17 @@ def _say_phone_number(raw: str) -> str:
     while i < len(rest):
         pair = rest[i:i + 2]
         if len(pair) == 2:
-            if pair[0] == "0":                        # e.g. "06" -> "صفر ستة"? Egyptians say "ستة"
-                out.append(number_to_arabic_words(int(pair[1])) if pair[1] != "0" else "صفر صفر")
+            if pair[0] == "0":                        # leading zero in a pair, e.g. "06" -> "زيرو ستة"
+                out.append("زيرو " + number_to_arabic_words(int(pair[1])) if pair[1] != "0"
+                           else "زيرو زيرو")
             else:
                 out.append(number_to_arabic_words(int(pair)))
         else:                                          # trailing single digit
-            out.append(number_to_arabic_words(int(pair)) if pair != "0" else "صفر")
+            out.append(number_to_arabic_words(int(pair)) if pair != "0" else "زيرو")
         i += 2
-    return (" زائد " if plus else " ") + " ".join(out) + " "
+    # join groups with an Arabic comma so the TTS inserts a short pause between pairs
+    spoken = "، ".join(out)
+    return (" زائد " if plus else " ") + spoken + " "
 
 
 # --------------------------------------------------------------------------- abbreviations

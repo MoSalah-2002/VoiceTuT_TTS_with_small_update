@@ -29,7 +29,6 @@ import json
 import os
 import time
 
-import numpy as np
 import soundfile as sf
 
 # ------------------------------------------------------------------ config
@@ -44,7 +43,7 @@ CLONE_REF_TEXT = ("و كذا بتاع ف دخلت صورت و انا مش مقت
                   "بالأرقام هو انجح في الايرادات من درس خصوصي")
 
 # a default male / female built-in speaker for mixed examples
-MALE_SPK = "Mohamed"
+MALE_SPK = "Abdullah"
 FEMALE_SPK = "Yasmin"
 
 
@@ -57,37 +56,37 @@ def build_examples():
 
     # ---------------- Pure Egyptian Arabic: short / medium / long ----------------
     EX["egyptian"] = [
-        ("eg_short_1", "ازيك عامل ايه النهاردة؟", "Mohamed", "arz", "قصير"),
-        ("eg_short_2", "يلا بينا نخرج نتمشى شوية.", "Yasmin", "arz", "قصير"),
-        ("eg_med_1", "النهارده الجو حلو اوي، فقلت اخرج اتمشى على الكورنيش واشرب حاجة ساقعة.",
-         "Asmaa", "arz", "متوسط"),
-        ("eg_med_2", "انا مكنتش عارف اقرر اروح المصيف ولا اقعد في البيت، بس في الاخر قررت اروح.",
+        ("eg_short_1", "ازيك عامل ايه في حياتك؟ طمني عليك", "Abdullah", "arz", "قصير"),
+        ("eg_short_2", "ما تيجي نخرج نتمشى شويه بعد الشغل.", "Yasmin", "arz", "قصير"),
+        ("eg_med_1", "النهاردَة الجو حلو اوي، فقلت اخرج اتمشى على الكورنيش واشرب حاجة ساقعة.",
+         "Omnia", "arz", "متوسط"),
+        ("eg_med_2", "انا مكنتش عارف اقرر اروح المشوار ده ولا اقعد في البيت، بس في الاخر قررت اروح عادي.",
          "Abdelrahman", "arz", "متوسط"),
         ("eg_long_1",
-         "بصراحة اليوم كان طويل جدا ومليان مشاوير، صحيت بدري وروحت الشغل، وبعد كده عديت على "
-         "السوبر ماركت جبت شوية حاجات، ولما رجعت البيت لقيت ضيوف مستنيني، فقعدت معاهم لحد بالليل "
+         "بصراحة اليوم كان طويل جدا ومليان مشاوير، صحيت بدري ورُحت الشغل، وبعد كده عديت على "
+         "السوبر ماركت جبت شويةْ حاجات، ولما رجعت البيت لقيت ضيوف مستنينِّي، فقعدت معاهم لحد بالليل "
          "وانا تعبان بس مبسوط.", "Sayed", "arz", "طويل"),
     ]
 
     # ---------------- Code-switching (Arabic + English) ----------------
     EX["codeswitch"] = [
-        ("cs_short_1", "عندي meeting بكرة الصبح.", "Mohamed", "arz", "قصير"),
+        ("cs_short_1", "عندي presentation مهمة بُكْرَه الصبح.", "Sayed", "arz", "قصير"),
         ("cs_short_2", "ابعتلي ال file على ال email.", "Esraa", "arz", "قصير"),
         ("cs_med_1",
-         "بصراحة ال feedback اللي جالي من ال manager كان كويس اوي، بس في شوية comments "
+         "بصراحة ال feedback اللي جالي من ال manager كان كويس اوي، بس في شويةْ comments "
          "محتاجين نخلصها قبل ال deadline.", "Hanan", "arz", "متوسط"),
         ("cs_med_2",
-         "النهارده هنعمل review لل code وبعدها هنبدأ ال deployment على ال server الجديد.",
-         "Omar", "arz", "متوسط"),
+         "النهاردَة هنعمل review لل code وبعدها هنبدأ ال deployment على ال server الجديد.",
+         "Abdullah", "arz", "متوسط"),
         ("cs_long_1",
-         "القصة دي اتكتبت في كتاب اسمه The Travels of Marco Polo، وبيوري الناس ان العالم "
-         "أكبر بكتير من اللي هما فاكرينه، وان في حضارات وثقافات كتير حوالينا، فلازم نكون "
+         "القصة دي اتكتبت في كتاب اسمه رحلات ماركو بولو 'The Travels of Marco Polo'، و الكتاب ده بيوري الناس ان العالم "
+         "أكبر بكتير من اللي هما فاكرينُه، وان في حضارات وثقافات كتير حوالينا، فلازم نكون "
          "open-minded ونتعلم من بعض على طول.", "Sarah", "arz", "طويل"),
     ]
 
     # ---------------- Pure English ----------------
     EX["english"] = [
-        ("en_short_1", "Hello, how are you doing today?", "Mohamed", "en", "short"),
+        ("en_short_1", "Hello, how are you doing today?", "Abdelrahman", "en", "short"),
         ("en_med_1", "Thank you for calling our support line, how can I help you today?",
          "Yasmin", "en", "medium"),
         ("en_long_1",
@@ -99,26 +98,23 @@ def build_examples():
     # ---------------- Normalization stress tests ----------------
     # These exercise the Arabic normalization pipeline (numbers/dates/times/phone/email/...).
     EX["normalization"] = [
-        ("norm_numbers", "عندي 250 جنيه ومعايا كمان 1500 جنيه في البنك، والمجموع 1750.",
-         "Mohamed", "arz", "أرقام وعملات"),
-        ("norm_time", "الميعاد الساعة 3:30، والاجتماع التاني 7:45، فمتتأخرش.",
+        ("norm_numbers", "كدة انا حسابي حوالي 450 جنيه و فلوس التوصيل حوالي 23 جنيه يبقا الاجمالي 473 جنيه عشان محدش ينصب عليا هااا.",
+         "Sayed", "arz", "أرقام وعملات"),
+        ("norm_time", "المعاد الساعة 3:30، والاجتماع التاني 7:45، فمتتأخرش عشان الموضوع مهم.",
          "Asmaa", "arz", "مواعيد"),
         ("norm_date", "الحلقة دي نزلت يوم 14/3/2024 وكان عليها مشاهدات كتير.",
          "Abdelrahman", "arz", "تواريخ"),
-        ("norm_phone", "كلمني على 01147450629 لو في اي حاجة مستعجلة.",
-         "Omar", "arz", "أرقام تليفون"),
-        ("norm_email_url", "ابعتلي على ahmed.ali@gmail.com وادخل على الموقع example.com/voicetut.",
-         "Hanan", "arz", "إيميل وروابط"),
+        ("norm_phone", "ابعتلي رسالة على الرقم ده: 01147450639 لو في اي حاجة مستعجلة.",
+         "Hossam", "arz", "أرقام تليفون"),
+        ("norm_email_url", "ابعتلي على mohamed.ali@gmail.com واِدْخُل على الموقع example.com/voicetut هتلاقي كل التفاصيل هناك.",
+         "Esraa", "arz", "إيميل وروابط"),
         ("norm_percent", "في خصم 25% على كل المنتجات، والتقييم وصل 99.5% من العملاء.",
          "Yasmin", "arz", "نسب مئوية"),
-        ("norm_mixed",
-         "النهارده 18/6/2026 الساعة 9:50، عندي 3 مواعيد و2 meetings، وكلمني على 01011624332.",
-         "Sayed", "arz", "اختبار شامل"),
     ]
 
     # ---------------- Per-speaker showcase (every built-in voice) ----------------
     # one representative code-switching line so each voice is heard on the same text.
-    SHOWCASE = ("اهلا بيكم، انا الصوت بتاعي من VoiceTut، وممكن اقولكم اي حاجة بالمصري وبال English كمان.")
+    SHOWCASE = ("اهلا بيكم، انا الصوت بتاعي من VoiceTut، وممكن اقول لُكُم اي حاجة بالمصري وبال English كمان.")
     EX["speakers"] = [
         (f"spk_{name.lower()}", SHOWCASE, name, "arz", name)
         for name in SPEAKER_NAMES
@@ -127,25 +123,25 @@ def build_examples():
     # ---------------- Customer-service use cases (VoiceTut only; male + female) ----------------
     CS_FEMALE = [
         ("cust_f_1",
-         "مساء الخير مع حضرتك ياسمين من بنك XYZ، ممكن اتشرف باسم حضرتك؟", FEMALE_SPK),
+         "مساء الخير مع حضرتك ياسمين من شركة VoiceTut، ممكن اتشرف باسم حضرتك؟", FEMALE_SPK),
         ("cust_f_2",
-         "اهلا بحضرتك، شكرا لاتصالك بخدمة عملاء VoiceTut، ازاي اقدر اساعد حضرتك النهاردة؟", FEMALE_SPK),
+         "اهلا بحضرتك، شكرا لاتصالك بخدمة عملاء VoiceTut، ازاي اقدر اساعد حضرتك النهارده؟", FEMALE_SPK),
         ("cust_f_3",
-         "تحت امرك، هسجل الشكوى دلوقتي وهيتم التواصل مع حضرتك خلال 24 ساعة على رقم حضرتك المسجل.",
+         "تحت امرك، هسجل الشكوى وهيتم التواصل مع حضرتك خلال 24 ساعة على رقم حضرتك اللي متسجل عندنا.",
          FEMALE_SPK),
         ("cust_f_4",
-         "للأسف الخدمة دي مش متاحة حاليا، بس ممكن احولك لقسم ال technical support يساعد حضرتك.",
+         "للأسف الخدمة دي مش متاحة حاليا، بس ممكن احول حضرتك لل department المسئول يساعد حضرتك.",
          FEMALE_SPK),
     ]
     CS_MALE = [
         ("cust_m_1",
-         "صباح الخير، معاك احمد من خدمة عملاء شركة XYZ، ممكن اعرف رقم الطلب بتاع حضرتك؟", MALE_SPK),
+         "صباح الخير، معاك احمد من خدمة عملاء شركة VoiceTut، ممكن اعرف رقم الطلب بتاع حضرتك؟", MALE_SPK),
         ("cust_m_2",
-         "تمام يا فندم، تم تأكيد الحجز، وهتوصلك رسالة فيها كل التفاصيل على ال WhatsApp.", MALE_SPK),
+         "تمام يا فندم، تم تأكيد الحجز، وهتوصلك رساله فيها كل التفاصيل على ال WhatsApp.", MALE_SPK),
         ("cust_m_3",
-         "اعتذر لحضرتك عن التأخير، فريق الصيانة في الطريق وهيوصل خلال نص ساعة بالكتير.", MALE_SPK),
+         "بعتذر لحضرتك عن التأخير، فريق الصيانه في الطريق وهيوصل خلال نص ساعة بالكتير.", MALE_SPK),
         ("cust_m_4",
-         "لو حضرتك محتاج اي مساعدة تانية، احنا موجودين 24 ساعة، وشكرا لتعاملك مع VoiceTut.",
+         "لو حضرتك محتاج اي مساعده تَانْيَه، احنا موجودين 24 ساعة، وشكرا لتعاملك مع VoiceTut.",
          MALE_SPK),
     ]
     EX["customer_service"] = [(k, t, spk, "arz", "خدمة عملاء") for (k, t, spk) in (CS_FEMALE + CS_MALE)]
@@ -154,7 +150,7 @@ def build_examples():
     EX["cloning"] = [
         ("clone_1", "انا بجرب استنساخ الصوت ده، وان شاء الله يطلع حلو وطبيعي زي ما احنا عايزين.",
          None, "arz", "استنساخ"),
-        ("clone_2", "ال demo ده بيبين قد ايه ال model بقى شاطر في اللهجة المصرية وال code-switching.",
+        ("clone_2", "ال demo ده بيوضح قد ايه ال model بقا شاطر في اللهجة المصرية وال code-switching كمان.",
          None, "arz", "استنساخ + code-switching"),
     ]
     return EX
