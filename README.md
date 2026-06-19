@@ -176,6 +176,7 @@ OMNICLEO_SHARE=1 python app.py                  # public share link
 | [01_quickstart.ipynb](examples/01_quickstart.ipynb) | Install, load, synthesize with a built-in voice | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MohammedAly22/VoiceTuT-TTS/blob/main/examples/01_quickstart.ipynb) |
 | [02_voice_cloning.ipynb](examples/02_voice_cloning.ipynb) | Zero-shot cloning + normalization & lexicon | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MohammedAly22/VoiceTuT-TTS/blob/main/examples/02_voice_cloning.ipynb) |
 | [03_web_ui.ipynb](examples/03_web_ui.ipynb) | Launch the Gradio web UI from Colab (public link) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MohammedAly22/VoiceTuT-TTS/blob/main/examples/03_web_ui.ipynb) |
+| [04_evaluation.ipynb](examples/04_evaluation.ipynb) | Measure RTF, TTFA, VRAM, WER, similarity, UTMOS | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MohammedAly22/VoiceTuT-TTS/blob/main/examples/04_evaluation.ipynb) |
 
 ## 🔗 Links
 
