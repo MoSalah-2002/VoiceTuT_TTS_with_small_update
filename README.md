@@ -34,28 +34,25 @@ VoiceTut-TTS is an Egyptian-Arabic text-to-speech system fine-tuned from [OmniVo
 
 ## 📊 Performance
 
-> Measured on a single **NVIDIA H100 80GB**, `float16`, `num_step=32`. Numbers are indicative; see [`examples/`](examples/) to reproduce.
+> Measured on a single **NVIDIA T4 (Colab)**, `float16`, `num_step=32`. Reproduce with [`examples/04_evaluation.ipynb`](examples/04_evaluation.ipynb).
 
 | Metric | Value |
 |---|---|
-| Real-time factor (RTF) | **~0.10** (≈10× faster than real-time) |
-| Time-to-first-audio (streaming, 1st sentence) | **~0.4–0.7 s** |
-| Peak VRAM (inference, fp16) | **~6.5 GB** |
+| Real-time factor (RTF, mean) | **1.13×** |
+| RTF (best) | **0.49×** |
+| Time-to-first-audio (streaming) | **1.68 s** |
+| Peak VRAM (fp16) | **2.93 GB** |
+| WER — Egyptian Arabic | **0.40** |
+| WER — English | **0.07** |
+| Speaker similarity (cloning, cosine) | **0.83** |
+| Naturalness (UTMOS, 1–5) | **3.47** |
 | Sampling rate | 24 kHz |
-| Speaker similarity (cloning, cosine) | **0.78** |
-| Naturalness (internal MOS, 1–5) | **4.1** |
 
-> TTFA and RTF scale with `num_step`; drop to `num_step=16` for faster, slightly lower-quality output.
+> Measured on a T4; expect markedly lower RTF / TTFA on an A100 / H100. RTF and TTFA scale with `num_step` — drop to `num_step=16` for faster, slightly lower-quality output.
 
 ## 🗣️ Sample Outputs
 
-| Type | Text | Speaker |
-|---|---|---|
-| Pure Egyptian | `ازيك عامل ايه النهاردة؟ يا رب تكون كويس` | Mohamed |
-| Code-switching | `عندي meeting الساعة 3:30 ومعايا ال presentation` | Asmaa |
-| Long / streaming | *(multi-sentence paragraph, streamed)* | Sayed |
-
-🎧 Listen to all built-in voices in the [web demo](#-serving) or the [Colab notebook](examples/01_quickstart.ipynb).
+🎧 **[Listen to all built-in voices & VoiceTut vs. base OmniVoice comparisons →](https://mohammedaly22.github.io/VoiceTuT-TTS/)** — pure Egyptian, code-switching, English, normalization, per-speaker, customer-service, and zero-shot cloning samples. Or try them live in the **[HuggingFace Space](https://huggingface.co/spaces/mohammedaly22/VoiceTut-TTS)**.
 
 ## 📦 Installation
 

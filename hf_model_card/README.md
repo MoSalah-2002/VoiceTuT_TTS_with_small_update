@@ -28,6 +28,7 @@ base_model:
 
 [![🤗 Model](https://img.shields.io/badge/🤗%20HuggingFace-Model-yellow)](https://huggingface.co/mohammedaly22/VoiceTut-TTS)
 [![🤗 Space](https://img.shields.io/badge/🤗%20Space-Demo-blue)](https://huggingface.co/spaces/mohammedaly22/VoiceTut-TTS)
+[![🎧 Samples](https://img.shields.io/badge/🎧%20Audio-Demos-ff9800)](https://mohammedaly22.github.io/VoiceTuT-TTS/)
 [![PyPI](https://img.shields.io/pypi/v/voicetut-tts?color=blue&label=PyPI)](https://pypi.org/project/voicetut-tts/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repo-181717?logo=github)](https://github.com/MohammedAly22/VoiceTuT-TTS)
 [![Base](https://img.shields.io/badge/Base-OmniVoice-purple)](https://github.com/k2-fsa/OmniVoice)
@@ -39,6 +40,12 @@ VoiceTut-TTS is an Egyptian-Arabic text-to-speech model fine-tuned from [OmniVoi
 
 > **Why "VoiceTut"?** *Tut* — after the boy-king **Tutankhamun** (توت عنخ آمون) — anchors the model in Egyptian identity, just as our companion ASR model **[QwenCleo-ASR](https://github.com/MohammedAly22/qwencleo-asr)** is named after **Cleopatra**. Together they form an Egyptian speech stack: **Cleo listens, Tut speaks.** 🎙️🗣️
 
+## 🔗 Links
+
+- 🎧 **Audio demo (VoiceTut vs. base OmniVoice):** https://mohammedaly22.github.io/VoiceTuT-TTS/
+- 🚀 **Interactive Space:** https://huggingface.co/spaces/mohammedaly22/VoiceTut-TTS
+- 💻 **GitHub (code, notebooks):** https://github.com/MohammedAly22/VoiceTuT-TTS
+- 📦 **PyPI:** https://pypi.org/project/voicetut-tts/
 
 ## ✨ Features
 
@@ -94,6 +101,24 @@ tts.synthesize_long(long_paragraph, "long.wav", speaker="Sayed")
 
 Each voice ships with a reference clip + Arabic style tags (e.g. `شبابي`, `حيوي`, `هادي`). Browse and listen in the [Space](https://huggingface.co/spaces/mohammedaly22/VoiceTut-TTS).
 
+
+## 📊 Performance
+
+> Measured on a single **NVIDIA T4 (Colab)**, `float16`, `num_step=32`. Reproduce with [`examples/04_evaluation.ipynb`](https://github.com/MohammedAly22/VoiceTuT-TTS/blob/main/examples/04_evaluation.ipynb).
+
+| Metric | Value |
+|---|---|
+| Real-time factor (RTF, mean) | **1.13×** |
+| RTF (best) | **0.49×** |
+| Time-to-first-audio (streaming) | **1.68 s** |
+| Peak VRAM (fp16) | **2.93 GB** |
+| WER — Egyptian Arabic | **0.40** |
+| WER — English | **0.07** |
+| Speaker similarity (cloning, cosine) | **0.83** |
+| Naturalness (UTMOS, 1–5) | **3.47** |
+| Sampling rate | 24 kHz |
+
+> On A100 / H100 expect markedly lower RTF and TTFA.
 
 ## 🏗️ Training
 

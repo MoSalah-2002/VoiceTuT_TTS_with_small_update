@@ -13,7 +13,7 @@ from .engine import (
 from .normalization import ArabicNormalizer, NormalizerConfig, number_to_arabic_words
 from .speakers import Speaker, SpeakerRegistry
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = [
     "VoiceTutTTS",
