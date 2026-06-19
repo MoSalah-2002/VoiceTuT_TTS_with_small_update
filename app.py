@@ -213,6 +213,17 @@ def _peak_vram_gb():
     return None
 
 
+def _chunk_to_wav_bytes(sr, wav):
+    """Encode one audio chunk as a standalone WAV byte-string for streaming output."""
+    import io
+    import numpy as np
+    import soundfile as sf
+    buf = io.BytesIO()
+    arr = np.asarray(wav, dtype=np.float32)
+    sf.write(buf, arr, sr, format="WAV")
+    return buf.getvalue()
+
+
 def stream_tts(text, speaker_name, ref_audio, ref_text, language,
                num_step, guidance, speed, normalize, *, use_clone):
     """Stream long text sentence-by-sentence: yields (audio_chunk, metrics_html)."""
@@ -246,7 +257,8 @@ def stream_tts(text, speaker_name, ref_audio, ref_text, language,
         audio_secs += len(chunk) / sr
         total = time.time() - t0
         metrics = _metrics_html(n, ttfa, total, audio_secs, _peak_vram_gb())
-        yield (sr, chunk), metrics
+        # yield WAV bytes -> a streaming gr.Audio appends & plays each chunk as it arrives
+        yield _chunk_to_wav_bytes(sr, chunk), metrics
 
 
 def preview_reference(speaker_name):
@@ -341,14 +353,23 @@ with gr.Blocks(**_blocks_kwargs) as demo:
                 stream_b = gr.Checkbox(value=False, elem_id="vt-stream",
                                        label="🌊 بث مباشر للنصوص الطويلة / Stream long text (audio chunks)")
                 gen_b = gr.Button("🔊 توليد الصوت", variant="primary", elem_id="vt-generate")
+                # one-shot output (visible by default)
                 out_b = gr.Audio(label="الناتج", type="numpy", elem_classes="vt-audio",
                                  waveform_options=WAVE, autoplay=True)
+                # streaming output: plays each chunk as it's produced (hidden until used)
+                out_b_stream = gr.Audio(label="الناتج (بث مباشر)", streaming=True, autoplay=True,
+                                        elem_classes="vt-audio", visible=False)
                 metrics_b = gr.HTML()
 
                 gr.Examples(EXAMPLES, inputs=[speaker, text_b], label="أمثلة",
                             run_on_click=False, cache_examples=False)
 
             speaker.change(preview_reference, speaker, [ref_prev, ref_txt, spk_meta])
+
+            # toggle which output is visible based on the streaming checkbox
+            def _toggle_outputs(stream_on):
+                return gr.update(visible=not stream_on), gr.update(visible=stream_on)
+            stream_b.change(_toggle_outputs, stream_b, [out_b, out_b_stream])
 
             def run_b(stream_on, speaker_name, text, language, ns, gs, sp, nm):
                 if stream_on:
@@ -359,8 +380,17 @@ with gr.Blocks(**_blocks_kwargs) as demo:
                     wav = gen_builtin(speaker_name, text, language, ns, gs, sp, nm)
                     yield wav, ""
 
-            gen_b.click(run_b, [stream_b, speaker, text_b, language, ns_b, gs_b, sp_b, nm_b],
-                        [out_b, metrics_b])
+            def run_b_dispatch(stream_on, *args):
+                # route to the correct output component (streaming vs one-shot)
+                if stream_on:
+                    for chunk, met in run_b(True, *args):
+                        yield gr.update(), chunk, met            # feed streaming Audio
+                else:
+                    wav, met = next(run_b(False, *args))
+                    yield wav, gr.update(), met                  # feed one-shot Audio
+
+            gen_b.click(run_b_dispatch, [stream_b, speaker, text_b, language, ns_b, gs_b, sp_b, nm_b],
+                        [out_b, out_b_stream, metrics_b])
 
         # ============================================= clone (single column)
         with gr.Tab("استنساخ صوت"):
@@ -383,7 +413,11 @@ with gr.Blocks(**_blocks_kwargs) as demo:
                 gen_c = gr.Button("🔊 توليد الصوت", variant="primary", elem_id="vt-generate")
                 out_c = gr.Audio(label="الناتج", type="numpy", elem_classes="vt-audio",
                                  waveform_options=WAVE, autoplay=True)
+                out_c_stream = gr.Audio(label="الناتج (بث مباشر)", streaming=True, autoplay=True,
+                                        elem_classes="vt-audio", visible=False)
                 metrics_c = gr.HTML()
+
+            stream_c.change(_toggle_outputs, stream_c, [out_c, out_c_stream])
 
             def run_c(stream_on, ref_audio, ref_text, text, language, ns, gs, sp, nm):
                 if stream_on:
@@ -394,8 +428,16 @@ with gr.Blocks(**_blocks_kwargs) as demo:
                     wav = gen_clone(ref_audio, ref_text, text, language, ns, gs, sp, nm)
                     yield wav, ""
 
-            gen_c.click(run_c, [stream_c, ref_audio_c, ref_text_c, text_c, language_c,
-                                ns_c, gs_c, sp_c, nm_c], [out_c, metrics_c])
+            def run_c_dispatch(stream_on, *args):
+                if stream_on:
+                    for chunk, met in run_c(True, *args):
+                        yield gr.update(), chunk, met
+                else:
+                    wav, met = next(run_c(False, *args))
+                    yield wav, gr.update(), met
+
+            gen_c.click(run_c_dispatch, [stream_c, ref_audio_c, ref_text_c, text_c, language_c,
+                                         ns_c, gs_c, sp_c, nm_c], [out_c, out_c_stream, metrics_c])
 
     # initial preview for the default speaker
     demo.load(preview_reference, speaker, [ref_prev, ref_txt, spk_meta])
