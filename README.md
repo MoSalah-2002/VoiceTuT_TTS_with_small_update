@@ -4,7 +4,7 @@
 
 # 𓋹 VoiceTut-TTS
 
-**An open-source text-to-speech model for Egyptian Arabic & code-switching**
+**An Open-Source Text-to-Speech Model for Egyptian Arabic & Code-Switching**
 
 [![🤗 Model](https://img.shields.io/badge/🤗%20HuggingFace-Model-yellow)](https://huggingface.co/mohammedaly22/VoiceTut-TTS)
 [![🤗 Space](https://img.shields.io/badge/🤗%20Space-Demo-blue)](https://huggingface.co/spaces/mohammedaly22/VoiceTut-TTS)
@@ -181,6 +181,13 @@ OMNICLEO_SHARE=1 python app.py                  # public share link
 - 📦 PyPI: https://pypi.org/project/voicetut-tts/
 - 🧠 Base model: https://github.com/k2-fsa/OmniVoice
 - 🎧 Companion ASR: https://github.com/MohammedAly22/qwencleo-asr
+
+## ⚠️ Responsible Use
+
+Voice cloning is provided for **beneficial** use cases — voice assistants, accessibility,
+educational and creative content. **Do not** use it to impersonate real people, produce deceptive
+audio, or harm, harass, or defraud anyone. Obtain consent before cloning a real person's voice and
+disclose synthetic audio where appropriate.
 
 ## 📜 License & Citation
 

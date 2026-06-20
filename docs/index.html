@@ -165,6 +165,18 @@
       margin-bottom: 18px;
     }
 
+    .caution {
+      background: rgba(255, 180, 60, .08);
+      border: 1px solid rgba(255, 180, 60, .35);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #f3d9a6;
+    }
+    .caution b { color: var(--amber); }
+
     .sample {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -394,12 +406,20 @@
       const content = document.getElementById("content");
       const nav = document.getElementById("navLinks");
       content.innerHTML = ""; nav.innerHTML = "";
+      const CAUTION = {
+        cloning: '⚠️ <b>تنويه أخلاقي:</b> عينات استنساخ الصوت دي الغرض منها إظهار جودة الموديل وحالات '
+          + 'الاستخدام المفيدة فقط (زي المساعدات الصوتية والمحتوى التعليمي). ممنوع استخدام استنساخ '
+          + 'الصوت لانتحال شخصية أي حد أو خداع أو إيذاء أي شخص.<br/>'
+          + '<span dir="ltr"><b>Ethical note:</b> these voice-cloning samples are for demonstrating quality '
+          + 'and beneficial use cases only — never to impersonate, deceive, or harm anyone.</span>',
+      };
       manifest.sections.forEach((sec) => {
         const meta = SECTION_META[sec.id] || { title: sec.id, sub: "" };
         nav.insertAdjacentHTML("beforeend", `<a href="#${sec.id}">${meta.title.replace(/^[^ ]+ /, "")}</a>`);
         const cards = sec.items.map(sampleCard).join("");
+        const caution = CAUTION[sec.id] ? `<div class="caution">${CAUTION[sec.id]}</div>` : "";
         content.insertAdjacentHTML("beforeend",
-          `<section id="${sec.id}"><h2>${meta.title}</h2><p class="sub">${meta.sub}</p>${cards}</section>`);
+          `<section id="${sec.id}"><h2>${meta.title}</h2><p class="sub">${meta.sub}</p>${caution}${cards}</section>`);
       });
     }
     load();

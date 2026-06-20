@@ -422,6 +422,16 @@
           "voicetut": "clone_2_voicetut.wav",
           "base": "clone_2_base.wav",
           "reference": "zero_shot_reference.mp3"
+        },
+        {
+          "key": "clone_3",
+          "text": "أول شغل ليا بعد التخرج كنت intern في OIE اللي هي Orange Innovation Egypt و بعدها بكام شهر جالي offer من شركة اسمها intelance و دي كانت شركة في لندن و كانت شغالة في مجال ال Healthtech و كنت مبسوط اوي وقتها الحقيقة يعني شغال remotely وبْتاع و بتقبَض كويس بس للأسف حصلت ظروف و اضطريت ان انا امشي بس بعد كدة بقا ربنا كرمني و I've joined Applied Innovation Center او اللي هو AIC و هنا بقا كانت بداية تعاملي مع ال Speech AI و ال Arabic NLP بشكل أعمق الحقيقة.",
+          "speaker": null,
+          "lang": "arz",
+          "note": "استنساخ صوت حقيقي (طويل) / real-voice clone (long)",
+          "voicetut": "clone_3_voicetut.wav",
+          "base": "clone_3_base.wav",
+          "reference": "zero_shot_reference_me.wav"
         }
       ]
     }

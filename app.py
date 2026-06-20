@@ -97,26 +97,40 @@ THEME = gr.themes.Soft(primary_hue="blue", neutral_hue="slate", radius_size="lg"
 )
 
 CUSTOM_CSS = """
-.gradio-container { max-width: 1200px !important; width: 100% !important; margin: 0 auto !important; direction: rtl!important;
+/* RTL leading order across the whole app (forced so SSR/Colab honor it) */
+.gradio-container, .gradio-container *:not(.vt-ltr) { direction: rtl; }
+.gradio-container { max-width: 1200px !important; width: 100% !important; margin: 0 auto !important;
   font-family: 'Cairo','Inter',system-ui,sans-serif !important; }
+/* keep latin-only widgets natural where needed */
+input[type=range], .vt-ltr, .vt-ltr * { direction: ltr; }
 footer { display: none !important; }
 
-/* hero */
+/* hero — responsive (wraps + recenters on mobile) */
 #vt-hero { display:flex; align-items:center; gap:16px; padding:22px 26px; margin:8px 0 18px;
-  border:1px solid #222228; border-radius:20px;
+  border:1px solid #222228; border-radius:20px; flex-wrap:wrap;
   background:linear-gradient(120deg,#0d0d10,#121218);
   box-shadow:0 16px 50px rgba(0,0,0,.6); }
 #vt-hero .logo { width:52px; height:52px; border-radius:14px; display:grid; place-items:center;
-  font-size:26px; background:linear-gradient(135deg,#2f6bff,#4f86ff); color:#fff;
+  font-size:26px; background:linear-gradient(135deg,#2f6bff,#4f86ff); color:#fff; flex:0 0 auto;
   box-shadow:0 8px 26px rgba(47,107,255,.45); animation:vtfloat 5s ease-in-out infinite; }
 @keyframes vtfloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+#vt-hero .vt-hero-txt { min-width: 0; flex: 1 1 200px; }
 #vt-hero h1 { font-size:26px; font-weight:800; margin:0; color:#f5f6f8; letter-spacing:-.5px; }
 #vt-hero .accent { background:linear-gradient(90deg,#4f86ff,#8ab0ff);
   -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-#vt-hero p { margin:3px 0 0; color:#8a8d96; font-size:14px; }
-#vt-hero .badges { margin-inline-start:auto; display:flex; gap:8px; }
+#vt-hero p { margin:3px 0 0; color:#8a8d96; font-size:14px; line-height:1.6; }
+#vt-hero .badges { margin-inline-start:auto; display:flex; gap:8px; flex-wrap:wrap; }
 #vt-hero .badge { font-size:12px; font-weight:700; color:#9fb6ff; padding:5px 12px;
-  border:1px solid rgba(47,107,255,.3); border-radius:20px; background:rgba(47,107,255,.1); }
+  border:1px solid rgba(47,107,255,.3); border-radius:20px; background:rgba(47,107,255,.1); white-space:nowrap; }
+
+/* mobile */
+@media (max-width: 600px) {
+  #vt-hero { padding:16px 18px; gap:12px; justify-content:center; text-align:center; }
+  #vt-hero h1 { font-size:21px; }
+  #vt-hero p { font-size:12.5px; }
+  #vt-hero .badges { margin-inline-start:0; width:100%; justify-content:center; }
+  .gradio-container { padding:0 8px !important; }
+}
 
 /* generate button */
 #vt-generate { font-weight:800 !important; font-size:16px !important; padding:14px !important;
@@ -343,7 +357,7 @@ with gr.Blocks(**_blocks_kwargs) as demo:
     gr.HTML(CHIP_CSS +
         '<div id="vt-hero">'
         '<div class="logo">𓋹</div>'
-        '<div><h1>VoiceTut<span class="accent">-TTS</span></h1>'
+        '<div class="vt-hero-txt"><h1>VoiceTut<span class="accent">-TTS</span></h1>'
         '<p>تحويل النص إلى كلام — مصري وإنجليزي · Egyptian Arabic & code-switching TTS</p></div>'
         '<div class="badges"><span class="badge">15 صوت</span>'
         '<span class="badge">Zero-shot</span><span class="badge">Streaming</span></div>'

@@ -24,7 +24,7 @@ base_model:
 
 # 𓋹 VoiceTut-TTS
 
-**An open-source text-to-speech model for Egyptian Arabic & code-switching**
+**An Open-Source Text-to-Speech Model for Egyptian Arabic & Code-Switching**
 
 [![🤗 Model](https://img.shields.io/badge/🤗%20HuggingFace-Model-yellow)](https://huggingface.co/mohammedaly22/VoiceTut-TTS)
 [![🤗 Space](https://img.shields.io/badge/🤗%20Space-Demo-blue)](https://huggingface.co/spaces/mohammedaly22/VoiceTut-TTS)
@@ -34,9 +34,9 @@ base_model:
 [![Base](https://img.shields.io/badge/Base-OmniVoice-purple)](https://github.com/k2-fsa/OmniVoice)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://github.com/MohammedAly22/VoiceTuT-TTS/blob/main/LICENSE)
 
-</div>
-
 VoiceTut-TTS is an Egyptian-Arabic text-to-speech model fine-tuned from [OmniVoice](https://github.com/k2-fsa/OmniVoice) on ~380 hours of Egyptian podcast speech. It produces natural Egyptian speech with seamless **Arabic ↔ English code-switching**, ships **15 built-in studio voices**, supports **zero-shot voice cloning**, and includes a robust Egyptian-Arabic **text normalization** pipeline plus **true streaming** for long text.
+
+</div>
 
 > **Why "VoiceTut"?** *Tut* — after the boy-king **Tutankhamun** (توت عنخ آمون) — anchors the model in Egyptian identity, just as our companion ASR model **[QwenCleo-ASR](https://github.com/MohammedAly22/qwencleo-asr)** is named after **Cleopatra**. Together they form an Egyptian speech stack: **Cleo listens, Tut speaks.** 🎙️🗣️
 
@@ -125,6 +125,13 @@ Each voice ships with a reference clip + Arabic style tags (e.g. `شبابي`, `
 - **Base model:** [k2-fsa/OmniVoice](https://github.com/k2-fsa/OmniVoice) (Qwen3-0.6B text backbone + Higgs audio tokenizer)
 - **Data:** ~380 h Egyptian-Arabic YouTube podcasts (`language_id = arz`)
 - **Steps:** 20,000 · **LR:** 3e-5 · **bf16**
+
+## ⚠️ Responsible Use
+
+Voice cloning is provided to enable **beneficial** use cases — voice assistants, accessibility,
+educational and creative content. **Do not** use it to impersonate real people, produce deceptive
+or misleading audio, or harm, harass, or defraud anyone. Always obtain consent before cloning a
+real person's voice, and disclose synthetic audio where appropriate.
 
 ## 📜 License & Citation
 
