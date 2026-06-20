@@ -374,11 +374,15 @@ with gr.Blocks(**_blocks_kwargs) as demo:
                 ns_b, gs_b, sp_b, nm_b = advanced_block()
                 stream_b = gr.Checkbox(value=False, elem_id="vt-stream",
                                        label="🌊 بث مباشر للنصوص الطويلة / Stream long text (audio chunks)")
+                # two generate buttons: one-shot (default) vs streaming. The streaming
+                # button + its streaming Audio are shown only when the checkbox is on.
+                # (A streaming=True output can't share a click handler with a one-shot
+                # output — Gradio routes the whole event as a stream and errors otherwise.)
                 gen_b = gr.Button("🔊 توليد الصوت", variant="primary", elem_id="vt-generate")
-                # one-shot output (visible by default)
+                gen_b_stream = gr.Button("🌊 توليد بالبث المباشر", variant="primary",
+                                         elem_id="vt-generate", visible=False)
                 out_b = gr.Audio(label="الناتج", type="numpy", elem_classes="vt-audio",
                                  waveform_options=WAVE, autoplay=True)
-                # streaming output: plays each chunk as it's produced (hidden until used)
                 out_b_stream = gr.Audio(label="الناتج (بث مباشر)", streaming=True, autoplay=True,
                                         elem_classes="vt-audio", visible=False)
                 metrics_b = gr.HTML()
@@ -388,31 +392,27 @@ with gr.Blocks(**_blocks_kwargs) as demo:
 
             speaker.change(preview_reference, speaker, [ref_prev, ref_txt, spk_meta])
 
-            # toggle which output is visible based on the streaming checkbox
-            def _toggle_outputs(stream_on):
-                return gr.update(visible=not stream_on), gr.update(visible=stream_on)
-            stream_b.change(_toggle_outputs, stream_b, [out_b, out_b_stream])
+            # checkbox swaps which button + output is visible
+            def _toggle_stream(stream_on):
+                return (gr.update(visible=not stream_on), gr.update(visible=stream_on),
+                        gr.update(visible=not stream_on), gr.update(visible=stream_on))
+            stream_b.change(_toggle_stream, stream_b,
+                            [gen_b, gen_b_stream, out_b, out_b_stream])
 
-            def run_b(stream_on, speaker_name, text, language, ns, gs, sp, nm):
-                if stream_on:
-                    for chunk, met in stream_tts(text, speaker_name, None, None, language,
-                                                 ns, gs, sp, nm, use_clone=False):
-                        yield chunk, met
-                else:
-                    wav = gen_builtin(speaker_name, text, language, ns, gs, sp, nm)
-                    yield wav, ""
+            # one-shot: plain function (NOT a generator) -> normal audio player
+            def run_b_oneshot(speaker_name, text, language, ns, gs, sp, nm):
+                return gen_builtin(speaker_name, text, language, ns, gs, sp, nm), ""
 
-            def run_b_dispatch(stream_on, *args):
-                # route to the correct output component (streaming vs one-shot)
-                if stream_on:
-                    for chunk, met in run_b(True, *args):
-                        yield gr.update(), chunk, met            # feed streaming Audio
-                else:
-                    wav, met = next(run_b(False, *args))
-                    yield wav, gr.update(), met                  # feed one-shot Audio
+            # streaming: generator -> streaming audio player
+            def run_b_stream(speaker_name, text, language, ns, gs, sp, nm):
+                for chunk, met in stream_tts(text, speaker_name, None, None, language,
+                                             ns, gs, sp, nm, use_clone=False):
+                    yield chunk, met
 
-            gen_b.click(run_b_dispatch, [stream_b, speaker, text_b, language, ns_b, gs_b, sp_b, nm_b],
-                        [out_b, out_b_stream, metrics_b])
+            gen_b.click(run_b_oneshot, [speaker, text_b, language, ns_b, gs_b, sp_b, nm_b],
+                        [out_b, metrics_b])
+            gen_b_stream.click(run_b_stream, [speaker, text_b, language, ns_b, gs_b, sp_b, nm_b],
+                               [out_b_stream, metrics_b])
 
         # ============================================= clone (single column)
         with gr.Tab("استنساخ صوت"):
@@ -433,33 +433,29 @@ with gr.Blocks(**_blocks_kwargs) as demo:
                 stream_c = gr.Checkbox(value=False, elem_id="vt-stream",
                                        label="🌊 بث مباشر للنصوص الطويلة / Stream long text (audio chunks)")
                 gen_c = gr.Button("🔊 توليد الصوت", variant="primary", elem_id="vt-generate")
+                gen_c_stream = gr.Button("🌊 توليد بالبث المباشر", variant="primary",
+                                         elem_id="vt-generate", visible=False)
                 out_c = gr.Audio(label="الناتج", type="numpy", elem_classes="vt-audio",
                                  waveform_options=WAVE, autoplay=True)
                 out_c_stream = gr.Audio(label="الناتج (بث مباشر)", streaming=True, autoplay=True,
                                         elem_classes="vt-audio", visible=False)
                 metrics_c = gr.HTML()
 
-            stream_c.change(_toggle_outputs, stream_c, [out_c, out_c_stream])
+            stream_c.change(_toggle_stream, stream_c,
+                            [gen_c, gen_c_stream, out_c, out_c_stream])
 
-            def run_c(stream_on, ref_audio, ref_text, text, language, ns, gs, sp, nm):
-                if stream_on:
-                    for chunk, met in stream_tts(text, None, ref_audio, ref_text, language,
-                                                 ns, gs, sp, nm, use_clone=True):
-                        yield chunk, met
-                else:
-                    wav = gen_clone(ref_audio, ref_text, text, language, ns, gs, sp, nm)
-                    yield wav, ""
+            def run_c_oneshot(ref_audio, ref_text, text, language, ns, gs, sp, nm):
+                return gen_clone(ref_audio, ref_text, text, language, ns, gs, sp, nm), ""
 
-            def run_c_dispatch(stream_on, *args):
-                if stream_on:
-                    for chunk, met in run_c(True, *args):
-                        yield gr.update(), chunk, met
-                else:
-                    wav, met = next(run_c(False, *args))
-                    yield wav, gr.update(), met
+            def run_c_stream(ref_audio, ref_text, text, language, ns, gs, sp, nm):
+                for chunk, met in stream_tts(text, None, ref_audio, ref_text, language,
+                                             ns, gs, sp, nm, use_clone=True):
+                    yield chunk, met
 
-            gen_c.click(run_c_dispatch, [stream_c, ref_audio_c, ref_text_c, text_c, language_c,
-                                         ns_c, gs_c, sp_c, nm_c], [out_c, out_c_stream, metrics_c])
+            gen_c.click(run_c_oneshot, [ref_audio_c, ref_text_c, text_c, language_c,
+                                        ns_c, gs_c, sp_c, nm_c], [out_c, metrics_c])
+            gen_c_stream.click(run_c_stream, [ref_audio_c, ref_text_c, text_c, language_c,
+                                              ns_c, gs_c, sp_c, nm_c], [out_c_stream, metrics_c])
 
     # initial preview for the default speaker
     demo.load(preview_reference, speaker, [ref_prev, ref_txt, spk_meta])
