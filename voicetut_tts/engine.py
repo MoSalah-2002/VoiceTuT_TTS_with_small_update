@@ -167,16 +167,17 @@ class VoiceTutTTS:
         import torch
         from omnivoice.models.omnivoice import OmniVoice
         # from omnivoice.utils.common import get_best_device
-         def get_best_device():
-            if torch.cuda.is_available():
-                device = torch.device("cuda")
-            elif torch.backends.mps.is_available():
-                device = torch.device("mps")  # Apple Silicon (M1/M2/M3)
-            else:
-                device = torch.device("cpu")
-            return device
-        dev = device or get_best_device()
+        def get_best_device(): 
+          if torch.cuda.is_available():
+              device = torch.device("cuda")
+          elif torch.backends.mps.is_available():
+              device = torch.device("mps")  # Apple Silicon (M1/M2/M3)
+          else:
+              device = torch.device("cpu")
+          return device
+
      
+        dev = device or get_best_device()
         torch_dtype = {"float16": torch.float16, "bfloat16": torch.bfloat16,
                        "float32": torch.float32}.get(dtype, torch.float16)
         log.info(f"Loading VoiceTut-TTS from '{model_path}' on {dev} ({dtype}) ...")
