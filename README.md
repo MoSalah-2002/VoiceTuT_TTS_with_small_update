@@ -56,21 +56,10 @@ VoiceTut-TTS is an Egyptian-Arabic text-to-speech system fine-tuned from [OmniVo
 
 ## 📦 Installation
 
-**Option A — PyPI**
-```bash
-# 1. PyTorch matching your CUDA (see https://pytorch.org)
-pip install torch --index-url https://download.pytorch.org/whl/cu121
-# 2. The OmniVoice backbone (not on PyPI, so install it from GitHub)
-pip install git+https://github.com/k2-fsa/OmniVoice.git
-# 3. VoiceTut-TTS
-pip install voicetut-tts
-# optional: web UI deps
-pip install "voicetut-tts[web]"
-```
 
-**Option B — from source**
+**from source**
 ```bash
-git clone https://github.com/MohammedAly22/VoiceTuT-TTS.git
+git clone https://github.com/MoSalah-2002/VoiceTuT-TTS_with_small_update.git
 cd VoiceTuT-TTS
 conda create -n voicetut python=3.10 -y && conda activate voicetut
 pip install torch --index-url https://download.pytorch.org/whl/cu121
@@ -83,6 +72,13 @@ pip install -e ".[web,dev]"
 ### Python API
 
 ```python
+import numpy as np
+import torch
+import IPython.display as ipd
+import sys
+from app import VoiceTutTTS
+sys.path.insert(1,"/content/VoiceTuT_TTS_with_small_update")
+
 from voicetut_tts import VoiceTutTTS
 
 tts = VoiceTutTTS.from_pretrained("mohammedaly22/VoiceTut-TTS")
@@ -99,6 +95,12 @@ tts.synthesize("النهارده الجو حلو اوي",
 tts.synthesize("عندي meeting الساعة 3:30",
                speaker="Asmaa", num_step=48, guidance_scale=2.5, speed=1.1,
                output="cs.wav")
+```
+
+### show speakers names and info about them
+```python
+for s in tts.list_speakers():
+    print(f"  {s.speaker_name:14} {s.gender:7} {', '.join(s.tags)}")
 ```
 
 ### True streaming (long text)
