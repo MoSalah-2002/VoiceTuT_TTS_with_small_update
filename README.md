@@ -59,7 +59,7 @@ VoiceTut-TTS is an Egyptian-Arabic text-to-speech system fine-tuned from [OmniVo
 
 **from source**
 ```bash
-git clone https://github.com/MoSalah-2002/VoiceTuT-TTS_with_small_update.git
+git clone https://github.com/MoSalah-2002/VoiceTuT_TTS_with_small_update.git
 cd VoiceTuT-TTS
 conda create -n voicetut python=3.10 -y && conda activate voicetut
 pip install torch --index-url https://download.pytorch.org/whl/cu121
@@ -78,7 +78,7 @@ import IPython.display as ipd
 import sys
 import os
 #Place the current path in the VoiceTuT-TTS_with_small_update folder
-os.chdir("../VoiceTuT-TTS_with_small_update")
+os.chdir("../VoiceTuT_TTS_with_small_update")
 #insert path in using sys
 sys.path.insert(1,"../VoiceTuT_TTS_with_small_update")
 from app import VoiceTutTTS
